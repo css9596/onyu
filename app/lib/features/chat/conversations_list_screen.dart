@@ -51,19 +51,7 @@ class ConversationsListScreen extends ConsumerWidget {
             child: ListView.separated(
               itemCount: list.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, i) {
-                final c = list[i];
-                return ListTile(
-                  title: Text(
-                    c.title?.isNotEmpty == true ? c.title! : '제목 없음',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(_formatRelative(c.lastMessageAt)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/chat?id=${c.id}'),
-                );
-              },
+              itemBuilder: (context, i) => _ConversationTile(c: list[i]),
             ),
           );
         },
@@ -72,6 +60,64 @@ class ConversationsListScreen extends ConsumerWidget {
         onPressed: () => context.push('/chat'),
         icon: const Icon(Icons.add),
         label: const Text('새 상담'),
+      ),
+    );
+  }
+}
+
+class _ConversationTile extends ConsumerWidget {
+  const _ConversationTile({required this.c});
+  final Conversation c;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
+    return Dismissible(
+      key: ValueKey(c.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: scheme.error,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        child: Icon(Icons.delete, color: scheme.onError),
+      ),
+      confirmDismiss: (_) async {
+        return await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('대화를 삭제하시겠어요?'),
+                content: const Text('삭제한 대화는 복구할 수 없어요.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('취소'),
+                  ),
+                  FilledButton(
+                    style: FilledButton.styleFrom(backgroundColor: scheme.error),
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text('삭제'),
+                  ),
+                ],
+              ),
+            ) ??
+            false;
+      },
+      onDismissed: (_) async {
+        try {
+          await ref.read(chatRepositoryProvider).deleteConversation(c.id);
+        } finally {
+          ref.invalidate(_conversationsProvider);
+        }
+      },
+      child: ListTile(
+        title: Text(
+          c.title?.isNotEmpty == true ? c.title! : '제목 없음',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(_formatRelative(c.lastMessageAt)),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/chat?id=${c.id}'),
       ),
     );
   }

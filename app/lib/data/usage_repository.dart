@@ -19,10 +19,27 @@ class UsageRepository {
         .maybeSingle();
 
     final tierStr = profile['subscription_tier'] as String;
+    final tier = SubscriptionTier.values.byName(tierStr);
+
+    DateTime? expiresAt;
+    if (tier == SubscriptionTier.premium) {
+      final sub = await _client
+          .from('subscriptions')
+          .select('expires_at')
+          .eq('status', 'active')
+          .order('expires_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      if (sub != null) {
+        expiresAt = DateTime.parse(sub['expires_at'] as String);
+      }
+    }
+
     return UsageInfo(
-      tier: SubscriptionTier.values.byName(tierStr),
+      tier: tier,
       dailyLimit: profile['daily_message_limit'] as int,
       usedToday: (usage?['user_message_count'] as int?) ?? 0,
+      premiumExpiresAt: expiresAt,
     );
   }
 

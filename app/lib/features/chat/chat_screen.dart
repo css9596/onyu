@@ -259,26 +259,45 @@ class _MessageBubble extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final bubbleColor = isUser ? scheme.primary : scheme.surfaceContainerHigh;
     final textColor = isUser ? scheme.onPrimary : scheme.onSurface;
+    final bubble = Flexible(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: bubbleColor,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(
+          message.content,
+          style: TextStyle(color: textColor, height: 1.4),
+        ),
+      ),
+    );
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                message.content,
-                style: TextStyle(color: textColor, height: 1.4),
-              ),
-            ),
-          ),
+          if (!isUser) ...[
+            const _AssistantAvatar(),
+            const SizedBox(width: 8),
+          ],
+          bubble,
         ],
       ),
+    );
+  }
+}
+
+class _AssistantAvatar extends StatelessWidget {
+  const _AssistantAvatar();
+  @override
+  Widget build(BuildContext context) {
+    return const CircleAvatar(
+      radius: 18,
+      backgroundColor: Color(0xFFFAF6F0),
+      backgroundImage: AssetImage('assets/branding/avatar.png'),
     );
   }
 }

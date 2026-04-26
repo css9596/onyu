@@ -34,6 +34,12 @@ class ChatRepository {
     return Conversation.fromJson(Map<String, dynamic>.from(row));
   }
 
+  /// RLS policy `conversations_all_own` permits this; CASCADE removes
+  /// the conversation's messages.
+  Future<void> deleteConversation(String conversationId) async {
+    await _client.from('conversations').delete().eq('id', conversationId);
+  }
+
   Future<List<Message>> fetchMessages(String conversationId) async {
     final rows = await _client
         .from('messages')

@@ -97,7 +97,13 @@ class SettingsScreen extends ConsumerWidget {
 
   String _subscriptionLabel(UsageInfo? info) {
     if (info == null) return '확인 중…';
-    if (info.isPremium) return '프리미엄 (무제한)';
+    if (info.isPremium) {
+      final exp = info.premiumExpiresAt;
+      if (exp == null) return '프리미엄 (무제한)';
+      final m = exp.month.toString().padLeft(2, '0');
+      final d = exp.day.toString().padLeft(2, '0');
+      return '프리미엄 · ${exp.year}-$m-$d 까지';
+    }
     return '무료 (오늘 ${info.usedToday}/${info.dailyLimit}회)';
   }
 

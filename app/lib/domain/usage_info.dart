@@ -5,11 +5,13 @@ class UsageInfo {
     required this.tier,
     required this.dailyLimit,
     required this.usedToday,
+    this.premiumExpiresAt,
   });
 
   final SubscriptionTier tier;
   final int dailyLimit;
   final int usedToday;
+  final DateTime? premiumExpiresAt;
 
   bool get isFree => tier == SubscriptionTier.free;
   bool get isPremium => tier == SubscriptionTier.premium;

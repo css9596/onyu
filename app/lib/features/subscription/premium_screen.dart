@@ -20,18 +20,31 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
       _busy = true;
       _error = null;
     });
+    final repo = ref.read(subscriptionsRepositoryProvider);
     try {
-      // TODO: replace with in_app_purchase plugin once App Store Connect /
-      // Google Play Console IDs are registered. Until then the mock receipt
-      // path lets the rest of the flow be exercised end-to-end.
-      await ref.read(subscriptionsRepositoryProvider).purchaseMock();
+      // Try the real platform IAP first; fall back to mock if the product
+      // is not advertised (e.g. before Play Console registration completes).
+      final realAvailable = await repo.isRealIapAvailable();
+      if (realAvailable) {
+        await repo.purchaseReal();
+      } else {
+        await repo.purchaseMock();
+      }
       ref.invalidate(usageInfoProvider);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('프리미엄으로 전환되었어요.')),
+        SnackBar(
+          content: Text(realAvailable
+              ? '프리미엄으로 전환되었어요.'
+              : '프리미엄으로 전환되었어요. (개발 모드 — 실 결제 없음)'),
+        ),
       );
       context.pop();
     } on PurchaseException catch (e) {
+      if (e.code == 'cancelled') {
+        if (mounted) setState(() => _error = null);
+        return;
+      }
       if (mounted) setState(() => _error = '결제 실패: ${e.code}');
     } catch (e) {
       if (mounted) setState(() => _error = '오류: $e');
@@ -105,7 +118,8 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '* 현재 데모 모드 — 실제 결제 없이 테스트용으로 활성화됩니다.',
+                  '* 스토어에 상품이 등록되면 실제 결제 흐름이 자동으로 활성화됩니다.\n'
+                  '  현재는 등록 상태에 따라 실 결제 또는 데모 모드로 진행됩니다.',
                   style: textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),

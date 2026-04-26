@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/providers.dart';
+import '../../core/saju_glyph.dart';
 import '../../domain/usage_info.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -19,6 +20,14 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('온유'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: '새로고침',
+            onPressed: () {
+              ref.invalidate(sajuProfileProvider);
+              ref.invalidate(usageInfoProvider);
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: '상담 기록',
@@ -58,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
                   Text('사주', style: textTheme.titleLarge),
                   const SizedBox(height: 12),
                   Wrap(
-                    spacing: 16,
+                    spacing: 20,
                     runSpacing: 12,
                     alignment: WrapAlignment.center,
                     children: [
@@ -67,6 +76,15 @@ class HomeScreen extends ConsumerWidget {
                           children: [
                             Text(label, style: textTheme.bodySmall),
                             Text(char ?? '—', style: textTheme.headlineMedium),
+                            if (char != null)
+                              Text(
+                                pillarHangul(char),
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                              ),
                           ],
                         ),
                     ],
