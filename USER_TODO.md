@@ -9,9 +9,12 @@
 
 - [ ] **상호 확정** — "온유"가 정식 명칭이 맞으면 그대로, 아니면 한 번에 변경 (앱 이름/스토어/약관/도메인 일괄)
 - [ ] **사업자 형태** — 개인사업자 등록 또는 법인 (앱 결제 매출 발생 시 부가세 신고 필요)
-- [ ] **앱 아이콘 디자이너 의뢰 여부** — 현재는 placeholder 캐릭터 (한복 명리학자 일러스트). 디자이너 작업 원하면:
-  - 같은 spec(1024×1024 PNG, 보라색 #5E35B1 배경)으로 받아서 `app/assets/branding/icon.png` 등 교체
-  - 캐릭터 SVG 마음에 들면 그대로 출시 가능
+- [ ] **앱 아이콘 — 디자이너 최종본 받으면 일괄 교체** (현재는 placeholder sunset wordmark)
+  - 같은 spec (1024×1024) 받아서 `app/assets/branding/` 의 4개 SVG 또는 PNG 교체
+  - 그 후 `./generate.sh` → `dart run flutter_launcher_icons` → `dart run flutter_native_splash:create`
+  - **놓치기 쉬운 곳**: 이메일 템플릿 안 HTML 아이콘 (`docs/email_templates.md`) — 현재 인라인 HTML로 그린 옛 아이콘 그대로. 디자이너 본 받으면 `<img src="...">` 로 교체 + Supabase Studio 5개 템플릿 다시 paste 필수
+  - 약관 페이지 `docs/legal/site/icon.png` 도 같이 교체 (favicon + 헤더)
+  - 자세한 체크리스트는 메모리 `onyu_branding_todos.md` 참고
 
 ---
 
