@@ -13,7 +13,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { DateTime } from "luxon";
-import { getFourPillars } from "@gracefullight/saju";
+import { getFourPillars, getSolarDate } from "@gracefullight/saju";
 import { createLuxonAdapter } from "@gracefullight/saju/adapters/luxon";
 
 // Default longitude for solar time correction when no birth_location given.
@@ -75,7 +75,19 @@ Deno.serve(async (req) => {
     const [hh, mm] = body.birth_time
       ? body.birth_time.split(":").map((x) => parseInt(x, 10))
       : [12, 0]; // hour unknown → noon as a neutral fallback (DB still stores null)
-    const [y, mo, d] = body.birth_date.split("-").map((x) => parseInt(x, 10));
+    const [yIn, moIn, dIn] = body.birth_date.split("-").map((x) => parseInt(x, 10));
+
+    // For lunar input: convert lunar→solar first, then proceed identically.
+    // The package's pillar calculator is timezone-aware (Asia/Seoul) and
+    // applies solar-time correction by longitude.
+    let y = yIn, mo = moIn, d = dIn;
+    if (body.birth_calendar === "lunar") {
+      const converted = getSolarDate(yIn, moIn, dIn, body.birth_is_leap_month ?? false);
+      y = converted.year;
+      mo = converted.month;
+      d = converted.day;
+    }
+
     const solar = DateTime.fromObject(
       { year: y, month: mo, day: d, hour: hh, minute: mm },
       { zone: "Asia/Seoul" },
@@ -142,12 +154,6 @@ function validate(body: ComputeSajuRequest): string | null {
   }
   if (!["solar", "lunar"].includes(body.birth_calendar)) {
     return "birth_calendar_invalid (expected 'solar' or 'lunar')";
-  }
-  if (body.birth_calendar === "lunar") {
-    // Lunar input requires an extra solar-conversion step that is not yet
-    // covered by tests. Reject explicitly so we don't silently store wrong
-    // pillars. TODO: enable after lunar→solar conversion is verified.
-    return "lunar_input_not_yet_supported";
   }
   return null;
 }

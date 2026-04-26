@@ -14,6 +14,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   DateTime? _birthDate;
   TimeOfDay? _birthTime;
   bool _timeUnknown = false;
+  SajuCalendar _calendar = SajuCalendar.solar;
+  bool _isLeapMonth = false;
   final _location = TextEditingController(text: '서울');
   bool _busy = false;
   String? _error;
@@ -73,7 +75,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       await ref.read(sajuRepositoryProvider).compute(
             birthDate: _birthDate!,
             birthTime: timeStr,
-            calendar: SajuCalendar.solar,
+            calendar: _calendar,
+            isLeapMonth: _isLeapMonth,
             location: _location.text.trim().isEmpty ? null : _location.text.trim(),
           );
       ref.invalidate(sajuProfileProvider);
@@ -110,13 +113,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 24),
+                SegmentedButton<SajuCalendar>(
+                  segments: const [
+                    ButtonSegment(value: SajuCalendar.solar, label: Text('양력')),
+                    ButtonSegment(value: SajuCalendar.lunar, label: Text('음력')),
+                  ],
+                  selected: {_calendar},
+                  onSelectionChanged: _busy
+                      ? null
+                      : (s) => setState(() {
+                            _calendar = s.first;
+                            if (_calendar == SajuCalendar.solar) {
+                              _isLeapMonth = false;
+                            }
+                          }),
+                ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('생년월일 (양력)'),
+                  title: Text(_calendar == SajuCalendar.lunar
+                      ? '생년월일 (음력)'
+                      : '생년월일 (양력)'),
                   subtitle: Text(dateText),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: _busy ? null : _pickDate,
                 ),
+                if (_calendar == SajuCalendar.lunar)
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: const Text('윤달'),
+                    subtitle: const Text('해당 음력 월이 윤달이면 선택'),
+                    value: _isLeapMonth,
+                    onChanged: _busy
+                        ? null
+                        : (v) => setState(() => _isLeapMonth = v ?? false),
+                  ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('출생 시각'),

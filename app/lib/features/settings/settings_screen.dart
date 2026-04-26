@@ -4,18 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/links.dart';
 import '../../core/providers.dart';
 import '../../data/account_repository.dart';
 import '../../domain/usage_info.dart';
-
-// Hosted via the GitHub Pages workflow at .github/workflows/pages.yml.
-// Update if the repo is renamed or moved.
-const _privacyUrl = 'https://css9596.github.io/onyu/privacy.html';
-const _termsUrl = 'https://css9596.github.io/onyu/terms.html';
-const _supportEmail = 'css9596@gmail.com';
-// Play Store deep-link to manage subscriptions for this app.
-const _manageSubscriptionUrl =
-    'https://play.google.com/store/account/subscriptions?package=com.sungsik.onyu';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -46,7 +38,7 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: Text(_subscriptionLabel(usage)),
             trailing: usage?.isPremium == true
                 ? TextButton(
-                    onPressed: () => _openExternal(_manageSubscriptionUrl),
+                    onPressed: () => _openExternal(AppLinks.manageSubscriptionUrl),
                     child: const Text('관리'),
                   )
                 : TextButton(
@@ -60,21 +52,21 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('개인정보처리방침'),
             trailing: const Icon(Icons.open_in_new, size: 18),
-            onTap: () => _openExternal(_privacyUrl),
+            onTap: () => _openExternal(AppLinks.privacyUrl),
           ),
           ListTile(
             leading: const Icon(Icons.description_outlined),
             title: const Text('이용약관'),
             trailing: const Icon(Icons.open_in_new, size: 18),
-            onTap: () => _openExternal(_termsUrl),
+            onTap: () => _openExternal(AppLinks.termsUrl),
           ),
 
           _SectionHeader(label: '지원'),
           ListTile(
             leading: const Icon(Icons.mail_outline),
             title: const Text('문의하기'),
-            subtitle: const Text(_supportEmail),
-            onTap: () => _openExternal('mailto:$_supportEmail'),
+            subtitle: const Text(AppLinks.supportEmail),
+            onTap: () => _openExternal('mailto:$AppLinks.supportEmail'),
           ),
           const _AppVersionTile(),
 

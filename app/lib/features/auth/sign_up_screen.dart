@@ -1,9 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/auth_errors.dart';
+import '../../core/links.dart';
 import '../../core/providers.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -17,6 +20,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _displayName = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
+  bool _agreed = false;
   bool _busy = false;
   String? _error;
 
@@ -30,6 +34,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (!_agreed) {
+      setState(() => _error = '약관에 동의해주세요.');
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -53,19 +61,26 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     }
   }
 
+  Future<void> _open(String url) =>
+      launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(title: const Text('회원가입')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 360),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextFormField(
                     controller: _displayName,
@@ -89,13 +104,58 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     validator: (v) =>
                         (v == null || v.length < 6) ? '6자 이상' : null,
                   ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _agreed,
+                        onChanged: _busy
+                            ? null
+                            : (v) => setState(() => _agreed = v ?? false),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: RichText(
+                            text: TextSpan(
+                              style: textTheme.bodySmall
+                                  ?.copyWith(color: scheme.onSurface, height: 1.4),
+                              children: [
+                                TextSpan(
+                                  text: '이용약관',
+                                  style: TextStyle(
+                                    color: scheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _open(AppLinks.termsUrl),
+                                ),
+                                const TextSpan(text: ' 및 '),
+                                TextSpan(
+                                  text: '개인정보처리방침',
+                                  style: TextStyle(
+                                    color: scheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _open(AppLinks.privacyUrl),
+                                ),
+                                const TextSpan(text: '에 동의합니다 (만 14세 이상)'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                    Text(_error!, style: TextStyle(color: scheme.error)),
                   ],
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   FilledButton(
-                    onPressed: _busy ? null : _submit,
+                    onPressed: (_busy || !_agreed) ? null : _submit,
                     child: _busy
                         ? const SizedBox(
                             width: 20,
