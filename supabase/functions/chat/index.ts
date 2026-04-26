@@ -14,9 +14,15 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 
-const HISTORY_LIMIT = 20;          // last N messages sent as context
+// Cost-tuned defaults (see docs/data_model.md → cost notes):
+//   HISTORY_LIMIT × turn cost grows linearly; 12 keeps a multi-turn 상담
+//     coherent without ballooning input tokens. CLAUDE.md target was 20.
+//   MAX_OUTPUT_TOKENS at 1500 covers a 4~5문단 답변comfortably.
+//   System prompt is cached via prompt-caching for ~10x input savings on
+//     subsequent turns within the 5-minute cache TTL.
+const HISTORY_LIMIT = 12;
 const ANTHROPIC_MODEL = "claude-sonnet-4-6";
-const MAX_OUTPUT_TOKENS = 2048;
+const MAX_OUTPUT_TOKENS = 1500;
 const CONTENT_MAX_CHARS = 4000;
 const MOCK_ANTHROPIC = Deno.env.get("MOCK_ANTHROPIC") === "true";
 
@@ -191,7 +197,17 @@ Deno.serve(async (req) => {
       const claudeResp = await client.messages.create({
         model: ANTHROPIC_MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
-        system: systemPrompt,
+        // Prompt caching: the system prompt + saju context is stable across
+        // turns within a 5-minute window, so mark it cacheable. Cache hits
+        // bill at ~10% of normal input rate; cache writes are ~1.25x the
+        // first time, then amortized away across subsequent turns.
+        system: [
+          {
+            type: "text",
+            text: systemPrompt,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
         messages: [
           ...history.map((m) => ({
             role: m.role as "user" | "assistant",
