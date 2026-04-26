@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adaptive icon background (Android): just the sunset gradient + soft
+  decorative blobs. Used in pubspec.yaml `adaptive_icon_background`.
+  When composited with icon_foreground.svg by the launcher, the result
+  matches the full-bleed icon.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="sunset" x1="0%" y1="0%" x2="20%" y2="100%">
+      <stop offset="0%" stop-color="#FFC9A8"/>
+      <stop offset="35%" stop-color="#FF8870"/>
+      <stop offset="70%" stop-color="#A04CB8"/>
+      <stop offset="100%" stop-color="#3D2A8E"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#sunset)"/>
+  <circle cx="780" cy="240" r="100" fill="#FFF4E0" opacity="0.18"/>
+  <circle cx="200" cy="820" r="140" fill="#FFD0B8" opacity="0.22"/>
+</svg>

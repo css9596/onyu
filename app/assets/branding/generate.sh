@@ -11,19 +11,22 @@ if ! command -v rsvg-convert >/dev/null; then
   exit 1
 fi
 
-echo "==> avatar.png (chat use)"
-rsvg-convert character.svg -w 256 -h 256 -o avatar.png
+echo "==> avatar.png (chat avatar — same wordmark style)"
+rsvg-convert icon.svg -w 256 -h 256 -o avatar.png
 
-echo "==> icon.png (1024x1024, full bleed app icon)"
+echo "==> icon.png (1024×1024, full bleed app icon)"
 rsvg-convert icon.svg -w 1024 -h 1024 -o icon.png
 
-echo "==> icon_foreground.png (1024x1024, adaptive icon foreground)"
+echo "==> icon_background.png (1024×1024, adaptive bg only)"
+rsvg-convert icon_background.svg -w 1024 -h 1024 -o icon_background.png
+
+echo "==> icon_foreground.png (1024×1024, adaptive fg, transparent)"
 rsvg-convert icon_foreground.svg -w 1024 -h 1024 -o icon_foreground.png
 
-echo "==> splash.png (512x512, splash logo)"
+echo "==> splash.png (512×512, splash logo, transparent)"
 rsvg-convert splash.svg -w 512 -h 512 -o splash.png
 
-echo "==> splash_android12.png (1152x1152, Android 12+ splash)"
+echo "==> splash_android12.png (1152×1152, Android 12+ splash)"
 rsvg-convert splash.svg -w 1152 -h 1152 -o splash_android12.png
 
 echo
