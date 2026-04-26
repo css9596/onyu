@@ -296,7 +296,6 @@ class _AssistantAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return const CircleAvatar(
       radius: 18,
-      backgroundColor: Color(0xFFFAF6F0),
       backgroundImage: AssetImage('assets/branding/avatar.png'),
     );
   }

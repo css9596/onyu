@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import 'core/brand.dart';
 import 'core/env.dart';
 import 'core/router.dart';
 import 'data/supabase.dart';
@@ -35,8 +36,16 @@ class OnyuApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: '온유',
+      themeMode: ThemeMode.system,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: BrandColors.seed),
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: BrandColors.seed,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       routerConfig: router,
