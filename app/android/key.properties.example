@@ -1,0 +1,15 @@
+# Copy to `android/key.properties` (gitignored) and fill with your actual values.
+# Generate the keystore with:
+#   keytool -genkey -v \
+#     -keystore ~/onyu-upload-keystore.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 \
+#     -alias onyu-upload
+#
+# Store the .jks file outside the repo and back it up.
+# LOSING IT MEANS YOU CAN NEVER UPDATE THE APP ON PLAY STORE AGAIN.
+# (Or: enroll in Play App Signing and keep the upload key only.)
+
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=onyu-upload
+storeFile=/Users/YOUR_USERNAME/onyu-upload-keystore.jks

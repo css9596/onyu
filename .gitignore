@@ -1,0 +1,53 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# Claude Code per-user settings
+.claude/settings.local.json
+
+# Environment / secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mobileprovision
+service-account*.json
+
+# Android signing — the upload keystore must NEVER be committed.
+key.properties
+*.jks
+*.keystore
+!key.properties.example
+
+# Logs
+*.log
+logs/
+
+# Local-only notes
+scratch/
+TODO.local.md
+
+# Supabase local-only artifacts not covered by supabase/.gitignore
+supabase/.branches/
+supabase/.temp/
+
+# Flutter/Dart caches that may leak into root if commands run from wrong dir
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>온유 — 약관 및 정책</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --ink: #1c1b1f;
+      --muted: #5b5b66;
+      --primary: #5e35b1;
+      --border: #e6e6ec;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                   "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      padding: 48px 20px;
+    }
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-mark {
+      width: 48px; height: 48px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .brand-text { font-weight: 600; font-size: 20px; }
+    h1 {
+      font-size: 28px;
+      margin: 0 0 8px;
+    }
+    .lede {
+      color: var(--muted);
+      margin: 0 0 32px;
+    }
+    nav.docs {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    nav.docs a {
+      display: block;
+      padding: 16px 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: border-color .15s;
+    }
+    nav.docs a:hover { border-color: var(--primary); }
+    nav.docs strong { display: block; font-size: 16px; margin-bottom: 2px; }
+    nav.docs span { color: var(--muted); font-size: 14px; }
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="./">
+      <div class="brand-mark">온</div>
+      <div class="brand-text">온유</div>
+    </a>
+    <h1>약관 및 정책</h1>
+    <p class="lede">온유 서비스 이용에 적용되는 약관과 개인정보처리방침입니다.</p>
+    <nav class="docs">
+      <a href="./privacy.html">
+        <strong>개인정보처리방침</strong>
+        <span>온유가 어떤 정보를 수집하고 어떻게 사용하는지 안내합니다.</span>
+      </a>
+      <a href="./terms.html">
+        <strong>서비스 이용약관</strong>
+        <span>온유 서비스 이용 시 적용되는 권리와 의무를 규정합니다.</span>
+      </a>
+    </nav>
+    <footer>
+      <div>문의: <a href="mailto:css9596@gmail.com">css9596@gmail.com</a></div>
+    </footer>
+  </main>
+</body>
+</html>
